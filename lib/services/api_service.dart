@@ -1,35 +1,47 @@
+import 'dart:async';
+
 class ApiService {
+  Future<Map<String, dynamic>> getSuggestions(int page, int limit) async {
+    await Future.delayed(const Duration(milliseconds: 500));
 
-  Future<Map<String, dynamic>> getSuggestions(int page) async {
-    await Future.delayed(const Duration(milliseconds: 800));
+    List allData = List.generate(20, (i) => {
+          "id": i + 1,
+          "title": "Ask about topic ${i + 1}",
+          "description": "Try something interesting"
+        });
 
-    List data = List.generate(10, (index) {
-      int id = (page - 1) * 10 + index + 1;
-
-      return {
-        "id": id,
-        "title": "AI Task $id",
-        "description": "Smart AI suggestion $id"
-      };
-    });
+    int start = (page - 1) * limit;
+    int end = start + limit;
 
     return {
       "status": "success",
-      "data": data,
-      "pagination": {
-        "current_page": page,
-        "total_pages": 5,
-        "has_next": page < 5
-      }
+      "data": allData.sublist(
+        start,
+        end > allData.length ? allData.length : end,
+      ),
+      "pagination": {"has_next": end < allData.length}
     };
   }
 
-  Future<Map<String, dynamic>> sendChat(String msg) async {
+  Future<Map<String, dynamic>> sendChat(String message) async {
     await Future.delayed(const Duration(seconds: 1));
 
-    return {
-      "status": "success",
-      "reply": "AI says: $msg processed successfully 🚀"
-    };
+    String msg = message.toLowerCase();
+    String reply;
+
+    if (msg.contains("flutter")) {
+      reply = "Flutter is a UI toolkit by Google.";
+    } else if (msg.contains("hello")) {
+      reply = "Hello 👋 How can I help?";
+    } else {
+      reply = "Interesting 🤔 Tell me more!";
+    }
+
+    return {"status": "success", "reply": reply};
+  }
+
+  Future<Map<String, dynamic>> getChatHistory() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return {"status": "success", "data": []};
   }
 }

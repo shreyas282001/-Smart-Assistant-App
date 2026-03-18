@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class ChatProvider extends ChangeNotifier {
-  final api = ApiService();
+  final ApiService api = ApiService();
 
   List<Map<String, String>> messages = [];
   bool isTyping = false;

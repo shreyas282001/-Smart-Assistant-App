@@ -18,15 +18,9 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.initialMessage != null &&
-          widget.initialMessage!.isNotEmpty) {
-
-        print("SENDING INITIAL MESSAGE"); // ✅ DEBUG
-
-        context
-            .read<ChatProvider>()
-            .sendMessage(widget.initialMessage!);
+    Future.microtask(() {
+      if (widget.initialMessage != null) {
+        context.read<ChatProvider>().sendMessage(widget.initialMessage!);
       }
     });
   }
@@ -36,49 +30,53 @@ class _ChatScreenState extends State<ChatScreen> {
     final provider = context.watch<ChatProvider>();
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(title: const Text("Assistant")),
-
       body: Column(
         children: [
           Expanded(
             child: ListView.builder(
               itemCount: provider.messages.length,
-              itemBuilder: (context, index) {
-                final msg = provider.messages[index];
+              itemBuilder: (_, i) {
+                final msg = provider.messages[i];
                 bool isUser = msg['sender'] == "user";
 
                 return Align(
-                  alignment: isUser
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
+                  alignment:
+                      isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
-                    margin: const EdgeInsets.all(8),
-                    padding: const EdgeInsets.all(14),
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isUser
-                          ? Colors.blue
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(12),
+                      color: isUser ? Colors.blue : Colors.grey[800],
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Text(msg['message'] ?? ""),
+                    child: Text(
+                      msg['message'] ?? "",
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
                 );
               },
             ),
           ),
-
+          if (provider.isTyping)
+            const Padding(
+              padding: EdgeInsets.all(8),
+              child: CircularProgressIndicator(),
+            ),
           Row(
             children: [
               Expanded(
-                child: TextField(controller: controller),
+                child: TextField(
+                  controller: controller,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
               IconButton(
-                icon: const Icon(Icons.send),
+                icon: const Icon(Icons.send, color: Colors.blue),
                 onPressed: () {
-                  final text = controller.text.trim();
-                  if (text.isEmpty) return;
-
-                  context.read<ChatProvider>().sendMessage(text);
+                  context.read<ChatProvider>().sendMessage(controller.text);
                   controller.clear();
                 },
               )

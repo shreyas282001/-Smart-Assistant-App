@@ -15,6 +15,7 @@ class HistoryScreen extends StatelessWidget {
         itemCount: provider.messages.length,
         itemBuilder: (_, i) {
           final msg = provider.messages[i];
+
           return ListTile(
             title: Text(msg['message'] ?? ""),
             subtitle: Text(msg['sender'] ?? ""),

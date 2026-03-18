@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class SuggestionProvider extends ChangeNotifier {
-  final api = ApiService();
+  final ApiService api = ApiService();
 
-  List suggestions = [];
+  List<Map<String, dynamic>> suggestions = [];
   int page = 1;
-  bool isLoading = false;
   bool hasNext = true;
+  bool isLoading = false;
 
   Future<void> fetchSuggestions() async {
     if (isLoading || !hasNext) return;
@@ -15,9 +15,9 @@ class SuggestionProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final res = await api.getSuggestions(page);
+    final res = await api.getSuggestions(page, 5);
 
-    suggestions.addAll(res['data']);
+    suggestions.addAll(List<Map<String, dynamic>>.from(res['data']));
     hasNext = res['pagination']['has_next'];
     page++;
 
